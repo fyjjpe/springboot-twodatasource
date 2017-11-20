@@ -1,8 +1,10 @@
 package com.imooc.controller;
 
+import com.imooc.test01.mapper.UserMapper01;
 import com.imooc.test01.service.UserService01;
 import com.imooc.test02.service.UserService02;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,6 +19,10 @@ public class UserController {
     private UserService01 userService01;
     @Autowired
     private UserService02 userService02;
+    @Autowired
+    private UserMapper01 userMapper01;
+    @Autowired
+    private CacheManager cacheManager;
 
     @RequestMapping("/addUser")
     @Transactional
@@ -25,5 +31,17 @@ public class UserController {
         int i = 1 / 0;
         userService01.addUser("test001", 19);
         return "success";
+    }
+
+    //测试将数据cache加入缓存
+    @RequestMapping("/getUserName")
+    public String getUserName(Integer id) {
+        return userMapper01.selectUser(id).toString();
+    }
+
+    //测试将数据从cache缓存中删除
+    @RequestMapping("/removeCache")
+    public void remove(){
+        cacheManager.getCache("baseCache").clear();
     }
 }
